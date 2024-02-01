@@ -1,6 +1,7 @@
 // ignore: library_prefixes
 import 'package:demohtmlpages/services/heading_parser.dart';
 import 'package:demohtmlpages/services/paragraph_parser.dart';
+// ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,7 @@ double getAvailableHeight(BuildContext context) {
   double screenHeight = MediaQuery.of(context).size.height;
   double appBarHeight = AppBar().preferredSize.height;
   double availableHeight = screenHeight - appBarHeight - (screenHeight * 0.15);
+  print("availableHeight: $availableHeight");
   return availableHeight;
 }
 
@@ -25,12 +27,11 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   double currentPageHeight = 0;
 
   for (String paragraph in paragraphs) {
-    double paragraphHeight = calculateParagraphHeight(paragraph);
-
     // Handle heading tags
     if (paragraph.contains(RegExp(r'<h[1-6][^>]*>'))) {
       // Heading tag found, handle it differently
-      double headingHeight = calculateHeadingHeight(paragraph);
+    double headingHeight = calculateHeadingHeight(paragraph);
+      // print("headingHeight: $headingHeight");
       if (currentPageHeight + headingHeight <= availableHeight) {
         currentPage.add(paragraph);
         currentPageHeight += headingHeight;
@@ -40,8 +41,13 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPage.add(paragraph);
         currentPageHeight = headingHeight;
       }
+      // Add else if for checking p tags
     } else {
       // Regular paragraph
+      double paragraphHeight = calculateParagraphHeight(paragraph);
+
+      // print("paragraphHeight: $paragraphHeight");
+
       if (currentPageHeight + paragraphHeight <= availableHeight) {
         currentPage.add(paragraph);
         currentPageHeight += paragraphHeight;
@@ -52,8 +58,10 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPageHeight = paragraphHeight;
       }
     }
+    // print("Page: ${pages.length}");
+    // print("currentPageHeight: $currentPageHeight");
+    // print("\n");
   }
-
   // Add the remaining paragraphs to the last page
   if (currentPage.isNotEmpty) {
     pages.add(List.from(currentPage));

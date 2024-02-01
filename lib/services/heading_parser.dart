@@ -3,44 +3,48 @@ import 'package:flutter/material.dart';
 double calculateHeadingHeight(String heading) {
   // Remove HTML tags
   String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '');
+  double lineHeight = 0.0;
+  int wordsPerLine = 0;
+
+  if (heading.contains(RegExp(r'<h[1][^>]*>'))) {
+    lineHeight = 45.0; // Set line height for <h1>
+    wordsPerLine = 5; // Set words per line for <h1>
+  } else if (heading.contains(RegExp(r'<h[2][^>]*>'))) {
+    lineHeight = 40.0; // Set line height for <h2>
+    wordsPerLine = 8; // Set words per line for <h2>
+  } else if (heading.contains(RegExp(r'<h[3][^>]*>'))) {
+    lineHeight = 35.0; // Set line height for <h3>
+    wordsPerLine = 10; // Set words per line for <h3>
+  } else if (heading.contains(RegExp(r'<h[4][^>]*>'))) {
+    lineHeight = 30.0; // Set line height for <h4>
+    wordsPerLine = 12; // Set words per line for <h4>
+  } else if (heading.contains(RegExp(r'<h[5][^>]*>'))) {
+    lineHeight = 25.0; // Set line height for <h5>
+    wordsPerLine = 15; // Set words per line for <h5>
+  } else if (heading.contains(RegExp(r'<h[6][^>]*>'))) {
+    lineHeight = 20.0; // Set line height for <h6>
+    wordsPerLine = 18; // Set words per line for <h6>
+  } else {
+    lineHeight = 25.0; // Default line height for unrecognized headings
+    wordsPerLine = 10; // Default words per line for unrecognized headings
+  }
 
   // Calculate the number of words in the heading
   List<String> words = plainText.split(' ');
   int numberOfWords = words.length;
 
-  // Assuming each word takes up 10 logical pixels for simplicity
-  double wordWidth = 10.0;
+  // Calculate the number of lines based on words per line
+  int numberOfLines = (numberOfWords / wordsPerLine).ceil();
 
-  // Calculate the heading height based on the number of words
-  double headingHeight = numberOfWords * wordWidth;
-
-  // Adjust the heading height based on the heading level
-  double fontSize;
-  if (heading.contains(RegExp(r'<h[1][^>]*>'))) {
-    fontSize = 32.0;
-  } else if (heading.contains(RegExp(r'<h[2][^>]*>'))) {
-    fontSize = 28.0;
-  } else if (heading.contains(RegExp(r'<h[3][^>]*>'))) {
-    fontSize = 24.0;
-  } else if (heading.contains(RegExp(r'<h[4][^>]*>'))) {
-    fontSize = 20.0;
-  } else if (heading.contains(RegExp(r'<h[5][^>]*>'))) {
-    fontSize = 18.0;
-  } else if (heading.contains(RegExp(r'<h[6][^>]*>'))) {
-    fontSize = 16.0;
-  } else {
-    fontSize = 16.0; // Default size for unrecognized headings
-  }
-
-  // Adjust the heading height based on the font size
-  headingHeight += fontSize * 1.5; // Adjust as needed
+  // Calculate total height based on the number of lines and line height
+  double headingHeight = numberOfLines * lineHeight;
 
   return headingHeight;
 }
 
 Widget buildHeading(String heading) {
   // Remove HTML tags
-  String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '');
+  String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '').trim();
 
   // Adjust the heading style based on the heading level
   TextStyle headingStyle;
