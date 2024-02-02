@@ -30,7 +30,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
     // Handle heading tags
     if (paragraph.contains(RegExp(r'<h[1-6][^>]*>'))) {
       // Heading tag found, handle it differently
-    double headingHeight = calculateHeadingHeight(paragraph);
+      double headingHeight = calculateHeadingHeight(paragraph);
       // print("headingHeight: $headingHeight");
       if (currentPageHeight + headingHeight <= availableHeight) {
         currentPage.add(paragraph);
@@ -41,8 +41,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPage.add(paragraph);
         currentPageHeight = headingHeight;
       }
-      // Add else if for checking p tags
-    } else {
+    } else if (paragraph.contains(RegExp(r'<p[^>]*>'))) {
       // Regular paragraph
       double paragraphHeight = calculateParagraphHeight(paragraph);
 

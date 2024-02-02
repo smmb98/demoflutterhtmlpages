@@ -59,14 +59,63 @@ double calculateParagraphHeight(String paragraph) {
 }
 
 Widget buildParagraph(String paragraph) {
-  // Remove HTML tags
-  String plainText = paragraph.replaceAll(RegExp(r'<[^>]*>'), '').trim();
+  String plainText = paragraph
+      .replaceAll(RegExp(r'<p[^>]*>'), '')
+      .replaceAll('</p>', '')
+      .trim();
+  List<TextSpan> spans = parseFormattingTags(plainText);
 
   return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: Text(
-      plainText,
-      style: TextStyle(fontSize: fontSize),
+    child: RichText(
+      text: TextSpan(
+        style: TextStyle(fontSize: fontSize),
+        children: spans,
+      ),
     ),
   );
+}
+
+List<TextSpan> parseFormattingTags(String paragraph) {
+  List<TextSpan> spans = [];
+  RegExp exp = RegExp(r'<(i|b)>(.*?)<\/\1>');
+
+  int startIndex = 0;
+  int endIndex = 0;
+
+  while (exp.hasMatch(paragraph)) {
+    RegExpMatch? match = exp.firstMatch(paragraph);
+    if (match != null) {
+      endIndex = match.start;
+
+      // Process the text before the formatting tag
+      if (startIndex < endIndex) {
+        spans.add(TextSpan(text: paragraph.substring(startIndex, endIndex)));
+      }
+
+      // Process the content within the formatting tag
+      String content = match.group(2)!;
+      List<TextSpan> nestedSpans = parseFormattingTags(content);
+
+      if (match.group(1) == 'i') {
+        spans.add(TextSpan(
+            style: TextStyle(fontStyle: FontStyle.italic),
+            children: nestedSpans));
+      } else if (match.group(1) == 'b') {
+        spans.add(TextSpan(
+            style: TextStyle(fontWeight: FontWeight.bold),
+            children: nestedSpans));
+      }
+
+      paragraph = paragraph.substring(match.end);
+      startIndex = match.end;
+    }
+  }
+
+  // Process any remaining text after the last formatting tag
+  if (startIndex < paragraph.length) {
+    spans.add(TextSpan(text: paragraph.substring(startIndex)));
+  }
+
+  return spans;
 }
