@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
-
+import '../Config/config_map.dart';
 import '../main.dart';
 
 double calculateParagraphHeight(String paragraph) {
   String plainText = paragraph.replaceAll(RegExp(r'<[^>]*>'), '');
 
-  double lineHeight;
-  int wordsPerLine;
+  // double lineHeight;
+  // int wordsPerLine;
 
-  // Adjusting lineHeight and wordsPerLine based on fontSize
-  switch (fontSize) {
-    case 14:
-      lineHeight = 21.0;
-      wordsPerLine = 11;
-      break;
-    case 16:
-      lineHeight = 25.0;
-      wordsPerLine = 10;
-      break;
-    case 18:
-      lineHeight = 25.0;
-      wordsPerLine = 8;
-      break;
-    // Add more cases as needed for other font sizes
+  // // Adjusting lineHeight and wordsPerLine based on fontSize
+  // switch (fontSize) {
+  //   case 14:
+  //     lineHeight = 21.0;
+  //     wordsPerLine = 11;
+  //     break;
+  //   case 16:
+  //     lineHeight = 25.0;
+  //     wordsPerLine = 10;
+  //     break;
+  //   case 18:
+  //     lineHeight = 25.0;
+  //     wordsPerLine = 8;
+  //     break;
+  //   // Add more cases as needed for other font sizes
 
-    default:
-      // Use a default value if the fontSize is not one of the specified cases
-      lineHeight = 25.0;
-      wordsPerLine = 10;
-      break;
-  }
+  //   default:
+  //     // Use a default value if the fontSize is not one of the specified cases
+  //     lineHeight = 25.0;
+  //     wordsPerLine = 10;
+  //     break;
+  // }
 
   // Assuming each line takes up 20 logical pixels for simplicity
   // double lineHeight = 45.0; // For 32px
@@ -47,11 +47,17 @@ double calculateParagraphHeight(String paragraph) {
   // int wordsPerLine = 8; // For 18px
   // int wordsPerLine = 10; // For 16px
   // int wordsPerLine = 11; // For 14px
-  int numberOfLines = (numberOfWords / wordsPerLine).ceil();
+  // int numberOfLines = (numberOfWords / wordsPerLine).ceil();
+  // print(ConfigMap.config[fontSize]!.paragraphWordsPerLine);
+  int numberOfLines =
+      (numberOfWords / ConfigMap.config[fontSize]!.paragraphWordsPerLine)
+          .ceil();
 
   // print("numberOfLines: $numberOfLines");
   // Calculating total height based on the number of lines and font size
-  double totalHeight = numberOfLines * lineHeight;
+  // double totalHeight = numberOfLines * lineHeight;
+  double totalHeight =
+      numberOfLines * ConfigMap.config[fontSize]!.paragraphLineHeight;
 
   // print("Paragraph totalHeight: $totalHeight\n");
 
@@ -69,7 +75,9 @@ Widget buildParagraph(String paragraph) {
     padding: const EdgeInsets.all(8.0),
     child: RichText(
       text: TextSpan(
-        style: TextStyle(fontSize: fontSize),
+        style: TextStyle(
+            fontSize: ConfigMap.config[fontSize]!.paragraphFontSize,
+            color: Colors.black),
         children: spans,
       ),
     ),
@@ -99,11 +107,11 @@ List<TextSpan> parseFormattingTags(String paragraph) {
 
       if (match.group(1) == 'i') {
         spans.add(TextSpan(
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: const TextStyle(fontStyle: FontStyle.italic),
             children: nestedSpans));
       } else if (match.group(1) == 'b') {
         spans.add(TextSpan(
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
             children: nestedSpans));
       }
 

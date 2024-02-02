@@ -5,8 +5,17 @@ import 'package:demohtmlpages/services/paragraph_parser.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:flutter/material.dart';
 
-double getAvailableHeight(BuildContext context) {
+import '../Config/config_map.dart';
+import '../main.dart';
+
+double getAvailableHeightAndWidth(BuildContext context) {
   double screenHeight = MediaQuery.of(context).size.height;
+  double screenWidth = MediaQuery.of(context).size.width;
+  ConfigMap.adjustParagraphWordsPerLine(screenWidth, fontSize);
+
+  print("screenHeight: $screenHeight");
+  print("screenWidth: $screenWidth");
+
   double appBarHeight = AppBar().preferredSize.height;
   double availableHeight = screenHeight - appBarHeight - (screenHeight * 0.15);
   print("availableHeight: $availableHeight");
@@ -23,7 +32,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   List<List<String>> pages = [];
   List<String> currentPage = [];
 
-  double availableHeight = getAvailableHeight(context);
+  double availableHeight = getAvailableHeightAndWidth(context);
   double currentPageHeight = 0;
 
   for (String paragraph in paragraphs) {
