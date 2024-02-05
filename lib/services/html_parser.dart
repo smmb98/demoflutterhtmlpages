@@ -38,7 +38,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
     // Handle heading tags
     if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
       // Heading tag found, handle it differently
-      double headingHeight = calculateHeadingHeight(htmlElement);
+      double headingHeight = calculateHeadingHeight(htmlElement, screenWidth);
       // print("headingHeight: $headingHeight");
       if (currentPageHeight + headingHeight <= screenHeight) {
         currentPage.add(htmlElement);

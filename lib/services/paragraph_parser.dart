@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:demohtmlpages/services/html_parser.dart';
 import 'package:flutter/material.dart';
 import '../Config/config_map.dart';
 import '../main.dart';
@@ -33,7 +32,7 @@ double calculateParagraphHeight(String paragraph, double screenWidth) {
   // double totalHeight = paragraphConstraint.height +
   //     (ConfigMap.config[fontSize]!.paragraphLineHeight / 2);
 
-  print("Measured Paragraph Text Height: $totalHeight pixels\n");
+  // print("Measured Paragraph Text Height: $totalHeight pixels\n");
 
   return totalHeight;
 }
