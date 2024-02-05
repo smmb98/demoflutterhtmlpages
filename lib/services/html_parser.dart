@@ -5,26 +5,23 @@ import 'package:demohtmlpages/services/paragraph_parser.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:flutter/material.dart';
 
-import '../Config/config_map.dart';
-import '../main.dart';
-
-double getAvailableHeightAndWidth(BuildContext context) {
+Map<String, double> getAvailableDeviceHeightAndWidth(BuildContext context) {
   double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
-  ConfigMap.adjustParagraphWordsPerLine(screenWidth, fontSize);
 
   print("screenHeight: $screenHeight");
   print("screenWidth: $screenWidth");
 
   double appBarHeight = AppBar().preferredSize.height;
-  double availableHeight = screenHeight - appBarHeight - (screenHeight * 0.15);
+  double availableHeight =
+      screenHeight - appBarHeight - ((screenHeight - appBarHeight) * 0.2);
   print("availableHeight: $availableHeight");
-  return availableHeight;
+  return {'screenHeight': availableHeight, 'screenWidth': screenWidth};
 }
 
 List<List<String>> parseHTML(String html, BuildContext context) {
   final document = htmlParser.parse(html);
-  List<String> paragraphs = document.body!.children
+  List<String> htmlContent = document.body!.children
       .map((element) => element.outerHtml)
       .where((html) => html.isNotEmpty)
       .toList();
@@ -32,37 +29,40 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   List<List<String>> pages = [];
   List<String> currentPage = [];
 
-  double availableHeight = getAvailableHeightAndWidth(context);
+  var {'screenHeight': screenHeight, 'screenWidth': screenWidth} =
+      getAvailableDeviceHeightAndWidth(context);
+
   double currentPageHeight = 0;
 
-  for (String paragraph in paragraphs) {
+  for (String htmlElement in htmlContent) {
     // Handle heading tags
-    if (paragraph.contains(RegExp(r'<h[1-6][^>]*>'))) {
+    if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
       // Heading tag found, handle it differently
-      double headingHeight = calculateHeadingHeight(paragraph);
+      double headingHeight = calculateHeadingHeight(htmlElement);
       // print("headingHeight: $headingHeight");
-      if (currentPageHeight + headingHeight <= availableHeight) {
-        currentPage.add(paragraph);
+      if (currentPageHeight + headingHeight <= screenHeight) {
+        currentPage.add(htmlElement);
         currentPageHeight += headingHeight;
       } else {
         pages.add(List.from(currentPage));
         currentPage.clear();
-        currentPage.add(paragraph);
+        currentPage.add(htmlElement);
         currentPageHeight = headingHeight;
       }
-    } else if (paragraph.contains(RegExp(r'<p[^>]*>'))) {
+    } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
       // Regular paragraph
-      double paragraphHeight = calculateParagraphHeight(paragraph);
+      double paragraphHeight =
+          calculateParagraphHeight(htmlElement, screenWidth);
 
       // print("paragraphHeight: $paragraphHeight");
 
-      if (currentPageHeight + paragraphHeight <= availableHeight) {
-        currentPage.add(paragraph);
+      if (currentPageHeight + paragraphHeight <= screenHeight) {
+        currentPage.add(htmlElement);
         currentPageHeight += paragraphHeight;
       } else {
         pages.add(List.from(currentPage));
         currentPage.clear();
-        currentPage.add(paragraph);
+        currentPage.add(htmlElement);
         currentPageHeight = paragraphHeight;
       }
     }
