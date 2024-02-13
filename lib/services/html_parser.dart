@@ -13,8 +13,9 @@ Map<String, double> getAvailableDeviceHeightAndWidth(BuildContext context) {
   print("screenWidth: $screenWidth");
 
   double appBarHeight = AppBar().preferredSize.height;
-  double availableHeight =
-      screenHeight - appBarHeight - ((screenHeight - appBarHeight) * 0.2);
+
+  double availableHeight = screenHeight - appBarHeight;
+  availableHeight = availableHeight - (availableHeight * 0.1);
   print("availableHeight: $availableHeight");
   return {'screenHeight': availableHeight, 'screenWidth': screenWidth};
 }
@@ -66,9 +67,9 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPageHeight = paragraphHeight;
       }
     }
-    // print("Page: ${pages.length}");
-    // print("currentPageHeight: $currentPageHeight");
-    // print("\n");
+    print("Page: ${pages.length}");
+    print("currentPageHeight: $currentPageHeight");
+    print("\n");
   }
   // Add the remaining paragraphs to the last page
   if (currentPage.isNotEmpty) {

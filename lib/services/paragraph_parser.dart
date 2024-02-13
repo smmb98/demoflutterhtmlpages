@@ -15,24 +15,11 @@ double calculateParagraphHeight(String paragraph, double screenWidth) {
 
   // Create a Paragraph with constraints
   Paragraph constrainedParagraph = paragraphBuilder.build()
-    ..layout(ParagraphConstraints(width: screenWidth));
+    ..layout(ParagraphConstraints(width: screenWidth - 16));
+  print(constrainedParagraph.height + 16);
 
   // Get the actual height of the rendered text
-  double totalHeight = constrainedParagraph.height + 12.5;
-
-  // if (fontSize == 14) {
-  //   totalHeight += 12.5;
-  // } else if (fontSize == 16) {
-  //   totalHeight += 12.5;
-  // } else if (fontSize == 18) {
-  //   totalHeight =
-  //       totalHeight + (ConfigMap.config[fontSize]!.paragraphLineHeight / 2);
-  // }
-
-  // double totalHeight = paragraphConstraint.height +
-  //     (ConfigMap.config[fontSize]!.paragraphLineHeight / 2);
-
-  // print("Measured Paragraph Text Height: $totalHeight pixels\n");
+  double totalHeight = constrainedParagraph.height + 16;
 
   return totalHeight;
 }

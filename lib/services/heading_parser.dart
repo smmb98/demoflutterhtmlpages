@@ -8,159 +8,108 @@ import '../main.dart';
 double calculateHeadingHeight(String heading, double screenWidth) {
   // Remove HTML tags
   String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '');
-  double totalHeight = 0;
 
-  if (heading.contains(RegExp(r'<h[1][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading1FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
+  double headingHeight = 0;
+  int headingLevel = 6; // Default to lowest heading level
 
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
+  // Determine heading level
+  RegExpMatch? match = RegExp(r'<h(\d)[^>]*>').firstMatch(heading);
+  if (match != null) {
+    headingLevel = int.parse(match.group(1)!);
+  }
+  double headingFontSize = 16;
 
-    // Get the actual height of the rendered text
-    totalHeight = constrainedParagraph.height + 22;
-  } else if (heading.contains(RegExp(r'<h[2][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading2FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-    print(constrainedParagraph.height);
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
-  } else if (heading.contains(RegExp(r'<h[3][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading3FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-    print(constrainedParagraph.height);
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
-  } else if (heading.contains(RegExp(r'<h[4][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading4FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-    print(constrainedParagraph.height);
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
-  } else if (heading.contains(RegExp(r'<h[5][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading5FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-    print(constrainedParagraph.height);
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
-  } else if (heading.contains(RegExp(r'<h[6][^>]*>'))) {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-    print(constrainedParagraph.height);
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
+  // Set font size based on heading level
+  if (headingLevel == 1) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading1FontSize;
+  } else if (headingLevel == 2) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading2FontSize;
+  } else if (headingLevel == 3) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading3FontSize;
+  } else if (headingLevel == 4) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading4FontSize;
+  } else if (headingLevel == 5) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading5FontSize;
+  } else if (headingLevel == 6) {
+    headingFontSize = ConfigMap.config[fontSize]!.heading6FontSize;
   } else {
-    ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
-        textDirection: TextDirection.ltr,
-      ),
-    )..addText(plainText);
-
-    // Create a Paragraph with constraints
-    Paragraph constrainedParagraph = paragraphBuilder.build()
-      ..layout(ParagraphConstraints(width: screenWidth));
-
-    // Get the actual height of the rendered text
-    totalHeight =
-        constrainedParagraph.height + (constrainedParagraph.height / 3);
+    headingFontSize = ConfigMap.config[fontSize]!.heading6FontSize;
   }
 
-  print("Measured Heading Text Height: $totalHeight pixels\n");
+  // Create paragraph builder
+  ParagraphBuilder paragraphBuilder = ParagraphBuilder(
+    ParagraphStyle(
+      fontSize: headingFontSize,
+      textDirection: TextDirection.ltr,
+    ),
+  )..addText(plainText);
 
-  return totalHeight;
+  // Create a Paragraph with constraints
+  Paragraph constrainedParagraph = paragraphBuilder.build()
+    ..layout(ParagraphConstraints(width: screenWidth - 16));
+
+  // Calculate total height
+  headingHeight = constrainedParagraph.height + 16;
+
+  print("Measured Heading Text Height: $headingHeight pixels\n");
+
+  return headingHeight;
 }
 
 Widget buildHeading(String heading) {
   // Remove HTML tags
   String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '').trim();
 
-  // Adjust the heading style based on the heading level
-  TextStyle headingStyle;
-  if (heading.contains(RegExp(r'<h[1][^>]*>'))) {
+  // Determine heading level
+  int headingLevel = 6; // Default to lowest heading level
+  RegExpMatch? match = RegExp(r'<h(\d)[^>]*>').firstMatch(heading);
+  if (match != null) {
+    headingLevel = int.parse(match.group(1)!);
+  }
+
+  // Get heading style based on heading level
+  TextStyle headingStyle = TextStyle(
+    fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+    fontWeight: FontWeight.bold,
+  );
+
+  if (headingLevel == 1) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading1FontSize,
-        fontWeight: FontWeight.bold);
-  } else if (heading.contains(RegExp(r'<h[2][^>]*>'))) {
+      fontSize: ConfigMap.config[fontSize]!.heading1FontSize,
+      fontWeight: FontWeight.bold,
+    );
+  } else if (headingLevel == 2) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading2FontSize,
-        fontWeight: FontWeight.bold);
-  } else if (heading.contains(RegExp(r'<h[3][^>]*>'))) {
+      fontSize: ConfigMap.config[fontSize]!.heading2FontSize,
+      fontWeight: FontWeight.bold,
+    );
+  } else if (headingLevel == 3) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading3FontSize,
-        fontWeight: FontWeight.bold);
-  } else if (heading.contains(RegExp(r'<h[4][^>]*>'))) {
+      fontSize: ConfigMap.config[fontSize]!.heading3FontSize,
+      fontWeight: FontWeight.bold,
+    );
+  } else if (headingLevel == 4) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading4FontSize,
-        fontWeight: FontWeight.bold);
-  } else if (heading.contains(RegExp(r'<h[5][^>]*>'))) {
+      fontSize: ConfigMap.config[fontSize]!.heading4FontSize,
+      fontWeight: FontWeight.bold,
+    );
+  } else if (headingLevel == 5) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading5FontSize,
-        fontWeight: FontWeight.bold);
-  } else if (heading.contains(RegExp(r'<h[6][^>]*>'))) {
+      fontSize: ConfigMap.config[fontSize]!.heading5FontSize,
+      fontWeight: FontWeight.bold,
+    );
+  } else if (headingLevel == 6) {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
-        fontWeight: FontWeight.bold);
+      fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+      fontWeight: FontWeight.bold,
+    );
   } else {
     headingStyle = TextStyle(
-        fontSize: ConfigMap.config[fontSize]!
-            .heading6FontSize); // Default style for unrecognized headings
+      fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+      fontWeight: FontWeight.bold,
+    );
   }
+
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Text(
