@@ -30,9 +30,9 @@ Widget buildParagraph(String paragraph) {
   String plainText = paragraph
       .replaceAll(RegExp(r'<p[^>]*>'), '')
       .replaceAll('</p>', '')
+      .trim()
       .replaceAll("&nbsp;", ' ')
-      .replaceAll("&#160;", ' ')
-      .trim();
+      .replaceAll("&#160;", ' ');
   List<TextSpan> spans = parseFormattingTags(plainText);
 
   return Padding(

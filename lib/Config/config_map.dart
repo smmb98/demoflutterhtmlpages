@@ -31,6 +31,19 @@ class ConfigMap {
     }
   }
 
+  double getParagraphLineSize() {
+    switch (_fontSize) {
+      case 14.0:
+        return 16.0;
+      case 16.0:
+        return 19.0;
+      case 18.0:
+        return 21.0;
+      default:
+        return 19.0; // Default to 16.0 if fontSize is not one of the specified values
+    }
+  }
+
   double getHeadingFontSize(HeadingType type) {
     switch (_fontSize) {
       case 14.0:

@@ -1,9 +1,6 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
 import '../Config/config_map.dart';
-import '../main.dart';
 
 double calculateHeadingHeight(String heading, double screenWidth) {
   // Remove HTML tags
@@ -42,7 +39,7 @@ double calculateHeadingHeight(String heading, double screenWidth) {
   // Calculate total height
   headingHeight = constrainedParagraph.height + 16;
 
-  print("Measured Heading Text Height: $headingHeight pixels\n");
+  // print("Measured Heading Text Height: $headingHeight pixels\n");
 
   return headingHeight;
 }

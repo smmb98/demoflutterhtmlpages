@@ -79,17 +79,17 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   return pages;
 }
 
-Widget buildPage(List<String> elements) {
+Widget buildPage(List<String> htmlElements) {
   return SingleChildScrollView(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: elements.map((element) {
-        if (element.contains(RegExp(r'<h[1-6][^>]*>'))) {
+      children: htmlElements.map((htmlElement) {
+        if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
           // Heading tag found, handle it differently
-          return buildHeading(element);
+          return buildHeading(htmlElement);
         } else {
           // Regular paragraph
-          return buildParagraph(element);
+          return buildParagraph(htmlElement);
         }
       }).toList(),
     ),
