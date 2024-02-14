@@ -1,142 +1,98 @@
-import 'config_map_interface.dart';
+enum HeadingType { h1, h2, h3, h4, h5, h6 }
 
 class ConfigMap {
-  static final Map<double, ConfigMapInterface> defaultConfig = {
-    14.0: ConfigMapInterface(
-      paragraphFontSize: 14.0,
-      paragraphLineHeight: 16.0,
-      // Headings 1 - 6
-      heading1FontSize: 30.0,
-      heading1LineHeight: 35.0,
+  static final ConfigMap _singleton = ConfigMap._internal();
+  late double _fontSize;
 
-      heading2FontSize: 26.0,
-      heading2LineHeight: 30.0,
+  factory ConfigMap() {
+    return _singleton;
+  }
 
-      heading3FontSize: 22.0,
-      heading3LineHeight: 26.0,
+  ConfigMap._internal() {
+    _fontSize = 16.0;
+  }
 
-      heading4FontSize: 18.0,
-      heading4LineHeight: 21.0,
+  double get fontSize => _fontSize;
 
-      heading5FontSize: 16.0,
-      heading5LineHeight: 19.0,
+  void setFontSize(double size) {
+    _fontSize = size;
+  }
 
-      heading6FontSize: 14.0,
-      heading6LineHeight: 16.0,
-    ),
-    16.0: ConfigMapInterface(
-      paragraphFontSize: 16.0,
-      paragraphLineHeight: 19.0,
-      // Headings 1 - 6
-      heading1FontSize: 32.0,
-      heading1LineHeight: 38.0,
+  double getParagraphFontSize() {
+    switch (_fontSize) {
+      case 14.0:
+        return 14.0;
+      case 16.0:
+        return 16.0;
+      case 18.0:
+        return 18.0;
+      default:
+        return 16.0; // Default to 16.0 if fontSize is not one of the specified values
+    }
+  }
 
-      heading2FontSize: 28.0,
-      heading2LineHeight: 33.0,
+  double getHeadingFontSize(HeadingType type) {
+    switch (_fontSize) {
+      case 14.0:
+        return _getHeadingFontSizeFor14px(type);
+      case 16.0:
+        return _getHeadingFontSizeFor16px(type);
+      case 18.0:
+        return _getHeadingFontSizeFor18px(type);
+      default:
+        return _getHeadingFontSizeFor16px(
+            type); // Default to 16.0 if fontSize is not one of the specified values
+    }
+  }
 
-      heading3FontSize: 24.0,
-      heading3LineHeight: 28.0,
+  double _getHeadingFontSizeFor14px(HeadingType type) {
+    switch (type) {
+      case HeadingType.h1:
+        return 30.0;
+      case HeadingType.h2:
+        return 26.0;
+      case HeadingType.h3:
+        return 22.0;
+      case HeadingType.h4:
+        return 18.0;
+      case HeadingType.h5:
+        return 16.0;
+      case HeadingType.h6:
+        return 14.0;
+    }
+  }
 
-      heading4FontSize: 20.0,
-      heading4LineHeight: 23.0,
+  double _getHeadingFontSizeFor16px(HeadingType type) {
+    switch (type) {
+      case HeadingType.h1:
+        return 32.0;
+      case HeadingType.h2:
+        return 28.0;
+      case HeadingType.h3:
+        return 24.0;
+      case HeadingType.h4:
+        return 20.0;
+      case HeadingType.h5:
+        return 18.0;
+      case HeadingType.h6:
+        return 16.0;
+    }
+  }
 
-      heading5FontSize: 18.0,
-      heading5LineHeight: 21.0,
-
-      heading6FontSize: 16.0,
-      heading6LineHeight: 19.0,
-    ),
-    18.0: ConfigMapInterface(
-      paragraphFontSize: 18.0,
-      paragraphLineHeight: 21.0,
-      // Headings 1 - 6
-      heading1FontSize: 34.0,
-      heading1LineHeight: 40.0,
-
-      heading2FontSize: 30.0,
-      heading2LineHeight: 35.0,
-
-      heading3FontSize: 26.0,
-      heading3LineHeight: 30.0,
-
-      heading4FontSize: 22.0,
-      heading4LineHeight: 26.0,
-
-      heading5FontSize: 20.0,
-      heading5LineHeight: 23.0,
-
-      heading6FontSize: 18.0,
-      heading6LineHeight: 21.0,
-    ),
-    // Add more entries for other font sizes
-  };
-  static Map<double, ConfigMapInterface> config = {
-    14.0: ConfigMapInterface(
-      paragraphFontSize: 14.0,
-      paragraphLineHeight: 16.0,
-      // Headings 1 - 6
-      heading1FontSize: 30.0,
-      heading1LineHeight: 35.0,
-
-      heading2FontSize: 26.0,
-      heading2LineHeight: 30.0,
-
-      heading3FontSize: 22.0,
-      heading3LineHeight: 26.0,
-
-      heading4FontSize: 18.0,
-      heading4LineHeight: 21.0,
-
-      heading5FontSize: 16.0,
-      heading5LineHeight: 19.0,
-
-      heading6FontSize: 14.0,
-      heading6LineHeight: 16.0,
-    ),
-    16.0: ConfigMapInterface(
-      paragraphFontSize: 16.0,
-      paragraphLineHeight: 19.0,
-      // Headings 1 - 6
-      heading1FontSize: 32.0,
-      heading1LineHeight: 38.0,
-
-      heading2FontSize: 28.0,
-      heading2LineHeight: 33.0,
-
-      heading3FontSize: 24.0,
-      heading3LineHeight: 28.0,
-
-      heading4FontSize: 20.0,
-      heading4LineHeight: 23.0,
-
-      heading5FontSize: 18.0,
-      heading5LineHeight: 21.0,
-
-      heading6FontSize: 16.0,
-      heading6LineHeight: 19.0,
-    ),
-    18.0: ConfigMapInterface(
-      paragraphFontSize: 18.0,
-      paragraphLineHeight: 21.0,
-      // Headings 1 - 6
-      heading1FontSize: 34.0,
-      heading1LineHeight: 40.0,
-
-      heading2FontSize: 30.0,
-      heading2LineHeight: 35.0,
-
-      heading3FontSize: 26.0,
-      heading3LineHeight: 30.0,
-
-      heading4FontSize: 22.0,
-      heading4LineHeight: 26.0,
-
-      heading5FontSize: 20.0,
-      heading5LineHeight: 23.0,
-
-      heading6FontSize: 18.0,
-      heading6LineHeight: 21.0,
-    ),
-    // Add more entries for other font sizes
-  };
+  double _getHeadingFontSizeFor18px(HeadingType type) {
+    switch (type) {
+      case HeadingType.h1:
+        return 34.0;
+      case HeadingType.h2:
+        return 30.0;
+      case HeadingType.h3:
+        return 26.0;
+      case HeadingType.h4:
+        return 22.0;
+      case HeadingType.h5:
+        return 20.0;
+      case HeadingType.h6:
+        return 18.0;
+    }
+  }
 }

@@ -20,20 +20,11 @@ double calculateHeadingHeight(String heading, double screenWidth) {
   double headingFontSize = 16;
 
   // Set font size based on heading level
-  if (headingLevel == 1) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading1FontSize;
-  } else if (headingLevel == 2) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading2FontSize;
-  } else if (headingLevel == 3) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading3FontSize;
-  } else if (headingLevel == 4) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading4FontSize;
-  } else if (headingLevel == 5) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading5FontSize;
-  } else if (headingLevel == 6) {
-    headingFontSize = ConfigMap.config[fontSize]!.heading6FontSize;
+  if (headingLevel >= 1 && headingLevel <= 6) {
+    headingFontSize =
+        ConfigMap().getHeadingFontSize(HeadingType.values[headingLevel - 1]);
   } else {
-    headingFontSize = ConfigMap.config[fontSize]!.heading6FontSize;
+    headingFontSize = ConfigMap().getHeadingFontSize(HeadingType.h6);
   }
 
   // Create paragraph builder
@@ -67,45 +58,20 @@ Widget buildHeading(String heading) {
     headingLevel = int.parse(match.group(1)!);
   }
 
-  // Get heading style based on heading level
   TextStyle headingStyle = TextStyle(
-    fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+    fontSize: ConfigMap().getHeadingFontSize(HeadingType.h6),
     fontWeight: FontWeight.bold,
   );
 
-  if (headingLevel == 1) {
+  if (headingLevel >= 1 && headingLevel <= 6) {
     headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading1FontSize,
-      fontWeight: FontWeight.bold,
-    );
-  } else if (headingLevel == 2) {
-    headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading2FontSize,
-      fontWeight: FontWeight.bold,
-    );
-  } else if (headingLevel == 3) {
-    headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading3FontSize,
-      fontWeight: FontWeight.bold,
-    );
-  } else if (headingLevel == 4) {
-    headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading4FontSize,
-      fontWeight: FontWeight.bold,
-    );
-  } else if (headingLevel == 5) {
-    headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading5FontSize,
-      fontWeight: FontWeight.bold,
-    );
-  } else if (headingLevel == 6) {
-    headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+      fontSize:
+          ConfigMap().getHeadingFontSize(HeadingType.values[headingLevel - 1]),
       fontWeight: FontWeight.bold,
     );
   } else {
     headingStyle = TextStyle(
-      fontSize: ConfigMap.config[fontSize]!.heading6FontSize,
+      fontSize: ConfigMap().getHeadingFontSize(HeadingType.h6),
       fontWeight: FontWeight.bold,
     );
   }

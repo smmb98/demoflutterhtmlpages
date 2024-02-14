@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../Config/config_map.dart';
-import '../main.dart';
 
 double calculateParagraphHeight(String paragraph, double screenWidth) {
   String plainText = paragraph
@@ -11,7 +10,7 @@ double calculateParagraphHeight(String paragraph, double screenWidth) {
 
   ParagraphBuilder paragraphBuilder = ParagraphBuilder(
     ParagraphStyle(
-      fontSize: ConfigMap.config[fontSize]!.paragraphFontSize,
+      fontSize: ConfigMap().getParagraphFontSize(),
       textDirection: TextDirection.ltr,
     ),
   )..addText(plainText);
@@ -41,8 +40,7 @@ Widget buildParagraph(String paragraph) {
     child: RichText(
       text: TextSpan(
         style: TextStyle(
-            fontSize: ConfigMap.config[fontSize]!.paragraphFontSize,
-            color: Colors.black),
+            fontSize: ConfigMap().getParagraphFontSize(), color: Colors.black),
         children: spans,
       ),
     ),

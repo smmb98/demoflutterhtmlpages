@@ -1,3 +1,4 @@
+import 'package:demohtmlpages/Config/config_map.dart';
 import 'package:demohtmlpages/services/html_parser.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +64,7 @@ class MyHomePageState extends State<MyHomePage> {
           PopupMenuButton<double>(
             onSelected: (value) {
               setState(() {
-                fontSize = value;
+                ConfigMap().setFontSize(value);
               });
             },
             itemBuilder: (context) {
