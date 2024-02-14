@@ -4,7 +4,10 @@ import '../Config/config_map.dart';
 import '../main.dart';
 
 double calculateParagraphHeight(String paragraph, double screenWidth) {
-  String plainText = paragraph.replaceAll(RegExp(r'<[^>]*>'), '');
+  String plainText = paragraph
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll("&nbsp;", ' ')
+      .replaceAll("&#160;", ' ');
 
   ParagraphBuilder paragraphBuilder = ParagraphBuilder(
     ParagraphStyle(
@@ -28,6 +31,8 @@ Widget buildParagraph(String paragraph) {
   String plainText = paragraph
       .replaceAll(RegExp(r'<p[^>]*>'), '')
       .replaceAll('</p>', '')
+      .replaceAll("&nbsp;", ' ')
+      .replaceAll("&#160;", ' ')
       .trim();
   List<TextSpan> spans = parseFormattingTags(plainText);
 
@@ -46,39 +51,41 @@ Widget buildParagraph(String paragraph) {
 
 List<TextSpan> parseFormattingTags(String paragraph) {
   List<TextSpan> spans = [];
-  RegExp exp = RegExp(r'<(i|b)>(.*?)<\/\1>');
+  RegExp exp = RegExp(r'<(i|b|span)[^>]*?>(.*?)<\/\1>');
 
   int startIndex = 0;
-  int endIndex = 0;
 
-  while (exp.hasMatch(paragraph)) {
-    RegExpMatch? match = exp.firstMatch(paragraph);
-    if (match != null) {
-      endIndex = match.start;
+  exp.allMatches(paragraph).forEach((match) {
+    // Process the text before the formatting tag
+    if (startIndex < match.start) {
+      spans.add(TextSpan(text: paragraph.substring(startIndex, match.start)));
+    }
 
-      // Process the text before the formatting tag
-      if (startIndex < endIndex) {
-        spans.add(TextSpan(text: paragraph.substring(startIndex, endIndex)));
-      }
+    // Process the content within the formatting tag
+    String tag = match.group(1)!;
+    String content = match.group(2)!;
 
-      // Process the content within the formatting tag
-      String content = match.group(2)!;
-      List<TextSpan> nestedSpans = parseFormattingTags(content);
-
-      if (match.group(1) == 'i') {
-        spans.add(TextSpan(
-            style: const TextStyle(fontStyle: FontStyle.italic),
-            children: nestedSpans));
-      } else if (match.group(1) == 'b') {
+    if (tag == 'i') {
+      spans.add(TextSpan(
+          style: const TextStyle(fontStyle: FontStyle.italic),
+          children: parseFormattingTags(content)));
+    } else if (tag == 'b') {
+      spans.add(TextSpan(
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: parseFormattingTags(content)));
+    } else if (tag == 'span') {
+      if (match.group(0)!.contains('font-weight: bolder')) {
         spans.add(TextSpan(
             style: const TextStyle(fontWeight: FontWeight.bold),
-            children: nestedSpans));
+            children: parseFormattingTags(content)));
+      } else {
+        // Default style for span tag
+        spans.addAll(parseFormattingTags(content));
       }
-
-      paragraph = paragraph.substring(match.end);
-      startIndex = match.end;
     }
-  }
+
+    startIndex = match.end;
+  });
 
   // Process any remaining text after the last formatting tag
   if (startIndex < paragraph.length) {

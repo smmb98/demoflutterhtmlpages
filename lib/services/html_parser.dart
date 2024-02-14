@@ -15,7 +15,7 @@ Map<String, double> getAvailableDeviceHeightAndWidth(BuildContext context) {
   double appBarHeight = AppBar().preferredSize.height;
 
   double availableHeight = screenHeight - appBarHeight;
-  availableHeight = availableHeight - (availableHeight * 0.1);
+  availableHeight = availableHeight - (availableHeight * 0.15);
   print("availableHeight: $availableHeight");
   return {'screenHeight': availableHeight, 'screenWidth': screenWidth};
 }
