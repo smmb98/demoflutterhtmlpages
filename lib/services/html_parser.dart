@@ -1,4 +1,5 @@
 // ignore: library_prefixes
+import 'package:demohtmlpages/Config/config_map.dart';
 import 'package:demohtmlpages/services/heading_parser.dart';
 import 'package:demohtmlpages/services/paragraph_parser.dart';
 // ignore: library_prefixes
@@ -60,6 +61,22 @@ List<List<String>> parseHTML(String html, BuildContext context) {
       if (currentPageHeight + paragraphHeight <= screenHeight) {
         currentPage.add(htmlElement);
         currentPageHeight += paragraphHeight;
+      } else if (currentPageHeight > ConfigMap().getParagraphLineSize() + 16) {
+        double availableHeight = screenHeight - currentPageHeight;
+
+        var {
+          'paragraphFirstPart': paragraphFirstPart,
+          'paragraphSecondPart': paragraphSecondPart,
+        } = splitParagraphIntoLines(
+            htmlElement, screenWidth, availableHeight, paragraphHeight);
+
+        currentPage.add(paragraphFirstPart);
+
+        pages.add(List.from(currentPage));
+        currentPage.clear();
+        currentPage.add(paragraphSecondPart);
+        currentPageHeight =
+            calculateParagraphHeight(paragraphSecondPart, screenWidth);
       } else {
         pages.add(List.from(currentPage));
         currentPage.clear();
@@ -67,9 +84,9 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPageHeight = paragraphHeight;
       }
     }
-    print("Page: ${pages.length}");
-    print("currentPageHeight: $currentPageHeight");
-    print("\n");
+    // print("Page: ${pages.length}");
+    // print("currentPageHeight: $currentPageHeight");
+    // print("\n");
   }
   // Add the remaining paragraphs to the last page
   if (currentPage.isNotEmpty) {
