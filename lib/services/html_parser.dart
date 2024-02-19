@@ -63,6 +63,8 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         currentPageHeight += paragraphHeight;
       } else if (currentPageHeight > ConfigMap().getParagraphLineSize() + 16) {
         double availableHeight = screenHeight - currentPageHeight;
+        // print("availableHeight = screenHeight - currentPageHeight");
+        // print("$availableHeight = $screenHeight - $currentPageHeight");
 
         var {
           'paragraphFirstPart': paragraphFirstPart,

@@ -103,9 +103,10 @@ Map<String, dynamic> splitParagraphIntoLines(String paragraph,
 
   // Initialize variables
   double currentHeight = ConfigMap().getParagraphLineSize();
-  String currentWords = words[0];
+  String currentWords = "";
 
-  for (String word in words) {
+  for (int i = 0; i < words.length; i++) {
+    String word = words[i];
     ParagraphBuilder paragraphBuilder = ParagraphBuilder(
       ParagraphStyle(
         fontSize: ConfigMap().getParagraphFontSize(),
@@ -113,7 +114,7 @@ Map<String, dynamic> splitParagraphIntoLines(String paragraph,
       ),
     );
 
-    paragraphBuilder.addText(currentWords);
+    paragraphBuilder.addText("$currentWords $word");
     Paragraph constrainedParagraph = paragraphBuilder.build()
       ..layout(ParagraphConstraints(width: screenWidth - 16));
 
@@ -125,11 +126,9 @@ Map<String, dynamic> splitParagraphIntoLines(String paragraph,
       // print(currentLinesHeight);
     }
     if (currentLinesHeight + 16 < availableHeight) {
-      // print("here");
       currentWords = "$currentWords $word";
+      // print(currentWords);
     } else {
-      // currentWords = "$currentWords $word";
-      // print("there");
       break;
     }
   }
@@ -147,15 +146,34 @@ Map<String, dynamic> splitParagraphIntoLines(String paragraph,
 }
 
 Map<String, String> conversionToHTML(String paragraph, String splittedText) {
-  // Find the last word in the modified text
-  String lastWord = splittedText.trim().split(' ').last;
+  String firstParagraphlastWord = splittedText.trim().split(' ').last;
+  int countOfFirstParagraphLastWord = 0;
+  for (String word in splittedText.trim().split(' ')) {
+    if (word.replaceAll(RegExp(r'<[^>]*>'), '') == firstParagraphlastWord) {
+      countOfFirstParagraphLastWord++;
+    }
+  }
+  // print(
+  //     'firstParagraphlastWord $firstParagraphlastWord appears $countOfFirstParagraphLastWord times.');
 
-  // Find the index of the last occurrence of the last word in the original paragraph
-  int lastIndex = paragraph.lastIndexOf(lastWord);
+  // Replace HTML tags with '^' characters
+  String cleanedParagraph = paragraph.replaceAllMapped(RegExp(r'<[^>]*>'),
+      (match) => match.group(0)!.replaceAll(RegExp(r'\S'), '^'));
+
+  // print("cleanedParagraph");
+  // print(cleanedParagraph);
+
+  int index = -1;
+  for (int i = 0; i < countOfFirstParagraphLastWord; i++) {
+    index = cleanedParagraph.indexOf(firstParagraphlastWord, index + 1);
+    if (index == -1) {
+      break; // Return -1 if the word is not found before reaching the n-th occurrence
+    }
+  }
 
   // Check for unclosed tags before the last occurrence index
   List<String> unclosedTags = [];
-  for (int i = 0; i < lastIndex; i++) {
+  for (int i = 0; i < index; i++) {
     if (paragraph[i] == '<') {
       int endIndex = paragraph.indexOf('>', i);
       String tag = paragraph.substring(i + 1, endIndex);
@@ -173,17 +191,18 @@ Map<String, String> conversionToHTML(String paragraph, String splittedText) {
   String closingTags = unclosedTags.reversed.map((tag) => '</$tag>').join();
 
   // Create the final fixed HTML by splitting at the last occurrence index and adding closing tags
-  String paragraphFirstPart = paragraph.substring(0, lastIndex) + closingTags;
+  String paragraphFirstPart =
+      paragraph.substring(0, index) + firstParagraphlastWord + closingTags;
 
   // Extract remaining HTML
-  String paragraphSecondPart = paragraph.substring(lastIndex + lastWord.length);
+  String paragraphSecondPart =
+      paragraph.substring(index + firstParagraphlastWord.length);
 
   // Add opening tags of the closed tags after the last word
   String openingTags = unclosedTags.map((tag) => '<$tag>').join();
-  // String openingTags = unclosedTags.reversed.map((tag) => '<$tag>').join();
 
   // Prepend opening tags to the remaining HTML
-  paragraphSecondPart = '$lastWord $openingTags$paragraphSecondPart'.trim();
+  paragraphSecondPart = '$openingTags$paragraphSecondPart'.trim();
   return {
     'paragraphFirstPart': paragraphFirstPart,
     'paragraphSecondPart': paragraphSecondPart
