@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:demohtmlpages/services/html_parser.dart';
 import 'package:flutter/material.dart';
 import '../Config/config_map.dart';
 
@@ -46,8 +47,12 @@ double calculateHeadingHeight(String heading, double screenWidth) {
 
 Widget buildHeading(String heading) {
   // Remove HTML tags
-  String plainText = heading.replaceAll(RegExp(r'<[^>]*>'), '').trim();
-
+  String plainText = heading
+      .replaceAll(RegExp(r'<h[^>]*>'), '')
+      .replaceAll(RegExp(r'</h[^>]*>'), '')
+      .trim()
+      .replaceAll("&nbsp;", ' ')
+      .replaceAll("&#160;", ' ');
   // Determine heading level
   int headingLevel = 6; // Default to lowest heading level
   RegExpMatch? match = RegExp(r'<h(\d)[^>]*>').firstMatch(heading);
@@ -73,11 +78,18 @@ Widget buildHeading(String heading) {
     );
   }
 
+  List<TextSpan> spans = parseFormattingTags(plainText);
+
   return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: Text(
-      plainText,
-      style: headingStyle,
+    child: RichText(
+      text: TextSpan(
+        style: TextStyle(
+            fontSize: headingStyle.fontSize,
+            fontWeight: FontWeight.bold,
+            color: Colors.black),
+        children: spans,
+      ),
     ),
   );
 }

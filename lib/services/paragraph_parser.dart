@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:demohtmlpages/services/html_parser.dart';
 import 'package:flutter/material.dart';
 import '../Config/config_map.dart';
 
@@ -37,6 +38,7 @@ Widget buildParagraph(String paragraph) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: RichText(
+      textAlign: TextAlign.justify,
       text: TextSpan(
         style: TextStyle(
             fontSize: ConfigMap().getParagraphFontSize(), color: Colors.black),
@@ -44,52 +46,6 @@ Widget buildParagraph(String paragraph) {
       ),
     ),
   );
-}
-
-List<TextSpan> parseFormattingTags(String paragraph) {
-  List<TextSpan> spans = [];
-  RegExp exp = RegExp(r'<(i|b|span)[^>]*?>(.*?)<\/\1>');
-
-  int startIndex = 0;
-
-  exp.allMatches(paragraph).forEach((match) {
-    // Process the text before the formatting tag
-    if (startIndex < match.start) {
-      spans.add(TextSpan(text: paragraph.substring(startIndex, match.start)));
-    }
-
-    // Process the content within the formatting tag
-    String tag = match.group(1)!;
-    String content = match.group(2)!;
-
-    if (tag == 'i') {
-      spans.add(TextSpan(
-          style: const TextStyle(fontStyle: FontStyle.italic),
-          children: parseFormattingTags(content)));
-    } else if (tag == 'b') {
-      spans.add(TextSpan(
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          children: parseFormattingTags(content)));
-    } else if (tag == 'span') {
-      if (match.group(0)!.contains('font-weight: bolder')) {
-        spans.add(TextSpan(
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            children: parseFormattingTags(content)));
-      } else {
-        // Default style for span tag
-        spans.addAll(parseFormattingTags(content));
-      }
-    }
-
-    startIndex = match.end;
-  });
-
-  // Process any remaining text after the last formatting tag
-  if (startIndex < paragraph.length) {
-    spans.add(TextSpan(text: paragraph.substring(startIndex)));
-  }
-
-  return spans;
 }
 
 Map<String, dynamic> splitParagraphIntoLines(String paragraph,
@@ -163,17 +119,18 @@ Map<String, String> conversionToHTML(String paragraph, String splittedText) {
   // print("cleanedParagraph");
   // print(cleanedParagraph);
 
-  int index = -1;
+  int indexOfFirstParagraphLastWord = -1;
   for (int i = 0; i < countOfFirstParagraphLastWord; i++) {
-    index = cleanedParagraph.indexOf(firstParagraphlastWord, index + 1);
-    if (index == -1) {
+    indexOfFirstParagraphLastWord = cleanedParagraph.indexOf(
+        firstParagraphlastWord, indexOfFirstParagraphLastWord + 1);
+    if (indexOfFirstParagraphLastWord == -1) {
       break; // Return -1 if the word is not found before reaching the n-th occurrence
     }
   }
 
   // Check for unclosed tags before the last occurrence index
   List<String> unclosedTags = [];
-  for (int i = 0; i < index; i++) {
+  for (int i = 0; i < indexOfFirstParagraphLastWord; i++) {
     if (paragraph[i] == '<') {
       int endIndex = paragraph.indexOf('>', i);
       String tag = paragraph.substring(i + 1, endIndex);
@@ -192,11 +149,13 @@ Map<String, String> conversionToHTML(String paragraph, String splittedText) {
 
   // Create the final fixed HTML by splitting at the last occurrence index and adding closing tags
   String paragraphFirstPart =
-      paragraph.substring(0, index) + firstParagraphlastWord + closingTags;
+      paragraph.substring(0, indexOfFirstParagraphLastWord) +
+          firstParagraphlastWord +
+          closingTags;
 
   // Extract remaining HTML
-  String paragraphSecondPart =
-      paragraph.substring(index + firstParagraphlastWord.length);
+  String paragraphSecondPart = paragraph
+      .substring(indexOfFirstParagraphLastWord + firstParagraphlastWord.length);
 
   // Add opening tags of the closed tags after the last word
   String openingTags = unclosedTags.map((tag) => '<$tag>').join();

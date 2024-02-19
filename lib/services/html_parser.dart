@@ -114,3 +114,53 @@ Widget buildPage(List<String> htmlElements) {
     ),
   );
 }
+
+List<TextSpan> parseFormattingTags(String htmlContents) {
+  List<TextSpan> spans = [];
+  RegExp exp = RegExp(r'<(i|b|u|span)[^>]*?>(.*?)<\/\1>');
+  int startIndex = 0;
+
+  exp.allMatches(htmlContents).forEach((match) {
+    // Process the text before the formatting tag
+    if (startIndex < match.start) {
+      spans
+          .add(TextSpan(text: htmlContents.substring(startIndex, match.start)));
+    }
+
+    // Process the content within the formatting tag
+    String tag = match.group(1)!;
+    String content = match.group(2)!;
+
+    if (tag == 'i') {
+      spans.add(TextSpan(
+          style: const TextStyle(fontStyle: FontStyle.italic),
+          children: parseFormattingTags(content)));
+    } else if (tag == 'u') {
+      spans.add(TextSpan(
+          style: const TextStyle(decoration: TextDecoration.underline),
+          children: parseFormattingTags(content)));
+    } else if (tag == 'b') {
+      spans.add(TextSpan(
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          children: parseFormattingTags(content)));
+    } else if (tag == 'span') {
+      if (match.group(0)!.contains('font-weight: bolder')) {
+        spans.add(TextSpan(
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            children: parseFormattingTags(content)));
+      } else {
+        // Default style for span tag
+        spans.addAll(parseFormattingTags(content));
+      }
+    }
+
+    startIndex = match.end;
+  });
+
+  // Process any remaining text after the last formatting tag
+  if (startIndex < htmlContents.length) {
+    spans.add(TextSpan(text: htmlContents.substring(startIndex)));
+  }
+
+  return spans;
+}
