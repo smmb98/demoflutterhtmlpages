@@ -53,6 +53,18 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPage.add(htmlElement);
           currentPageHeight = headingHeight;
         }
+      } else if (htmlElement.contains('<br>')) {
+        double lineBreak = ConfigMap().getParagraphLineSize() + 16;
+        // print("headingHeight: $headingHeight");
+        if (currentPageHeight + lineBreak <= screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += lineBreak;
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = lineBreak;
+        }
       } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
         // Regular paragraph
         double paragraphHeight =
@@ -102,7 +114,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   return pages;
 }
 
-Widget buildPage(List<String> htmlElements) {
+Widget buildPage(List<String> htmlElements, BuildContext context) {
   return SingleChildScrollView(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,6 +122,11 @@ Widget buildPage(List<String> htmlElements) {
         if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
           // Heading tag found, handle it differently
           return buildHeading(htmlElement);
+        } else if (htmlElement.contains('<br>')) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: ConfigMap().getParagraphLineSize() + 16,
+          );
         } else {
           // Regular paragraph
           return buildParagraph(htmlElement);
