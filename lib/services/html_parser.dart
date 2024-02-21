@@ -37,58 +37,62 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   double currentPageHeight = 0;
 
   for (String htmlElement in htmlContent) {
-    // Handle heading tags
-    if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
-      // Heading tag found, handle it differently
-      double headingHeight = calculateHeadingHeight(htmlElement, screenWidth);
-      // print("headingHeight: $headingHeight");
-      if (currentPageHeight + headingHeight <= screenHeight) {
-        currentPage.add(htmlElement);
-        currentPageHeight += headingHeight;
-      } else {
-        pages.add(List.from(currentPage));
-        currentPage.clear();
-        currentPage.add(htmlElement);
-        currentPageHeight = headingHeight;
+    if (!RegExp(r'<(\w+)[^>]*>\s*</\1>').hasMatch(htmlElement)) {
+      print(htmlElement);
+      // Handle heading tags
+      if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
+        // Heading tag found, handle it differently
+        double headingHeight = calculateHeadingHeight(htmlElement, screenWidth);
+        // print("headingHeight: $headingHeight");
+        if (currentPageHeight + headingHeight <= screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += headingHeight;
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = headingHeight;
+        }
+      } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
+        // Regular paragraph
+        double paragraphHeight =
+            calculateParagraphHeight(htmlElement, screenWidth);
+
+        // print("paragraphHeight: $paragraphHeight");
+
+        if (currentPageHeight + paragraphHeight <= screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += paragraphHeight;
+        } else if (currentPageHeight >
+            ConfigMap().getParagraphLineSize() + 16) {
+          double availableHeight = screenHeight - currentPageHeight;
+          // print("availableHeight = screenHeight - currentPageHeight");
+          // print("$availableHeight = $screenHeight - $currentPageHeight");
+
+          var {
+            'paragraphFirstPart': paragraphFirstPart,
+            'paragraphSecondPart': paragraphSecondPart,
+          } = splitParagraphIntoLines(
+              htmlElement, screenWidth, availableHeight, paragraphHeight);
+
+          currentPage.add(paragraphFirstPart);
+
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(paragraphSecondPart);
+          currentPageHeight =
+              calculateParagraphHeight(paragraphSecondPart, screenWidth);
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = paragraphHeight;
+        }
       }
-    } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
-      // Regular paragraph
-      double paragraphHeight =
-          calculateParagraphHeight(htmlElement, screenWidth);
-
-      // print("paragraphHeight: $paragraphHeight");
-
-      if (currentPageHeight + paragraphHeight <= screenHeight) {
-        currentPage.add(htmlElement);
-        currentPageHeight += paragraphHeight;
-      } else if (currentPageHeight > ConfigMap().getParagraphLineSize() + 16) {
-        double availableHeight = screenHeight - currentPageHeight;
-        // print("availableHeight = screenHeight - currentPageHeight");
-        // print("$availableHeight = $screenHeight - $currentPageHeight");
-
-        var {
-          'paragraphFirstPart': paragraphFirstPart,
-          'paragraphSecondPart': paragraphSecondPart,
-        } = splitParagraphIntoLines(
-            htmlElement, screenWidth, availableHeight, paragraphHeight);
-
-        currentPage.add(paragraphFirstPart);
-
-        pages.add(List.from(currentPage));
-        currentPage.clear();
-        currentPage.add(paragraphSecondPart);
-        currentPageHeight =
-            calculateParagraphHeight(paragraphSecondPart, screenWidth);
-      } else {
-        pages.add(List.from(currentPage));
-        currentPage.clear();
-        currentPage.add(htmlElement);
-        currentPageHeight = paragraphHeight;
-      }
+      // print("Page: ${pages.length}");
+      // print("currentPageHeight: $currentPageHeight");
+      // print("\n");
     }
-    // print("Page: ${pages.length}");
-    // print("currentPageHeight: $currentPageHeight");
-    // print("\n");
   }
   // Add the remaining paragraphs to the last page
   if (currentPage.isNotEmpty) {
