@@ -76,6 +76,7 @@ Map<String, dynamic> splitParagraphIntoLines(String paragraph,
 
     // Get the actual height of the rendered text
     double currentLinesHeight = constrainedParagraph.height;
+    // print("currentLinesHeight: $currentLinesHeight");
     if (currentHeight < currentLinesHeight) {
       currentHeight = currentLinesHeight;
       // print("////currentLinesHeight + 16: ");

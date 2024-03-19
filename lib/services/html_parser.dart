@@ -38,7 +38,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
 
   for (String htmlElement in htmlContent) {
     if (!RegExp(r'<(\w+)[^>]*>\s*</\1>').hasMatch(htmlElement)) {
-      print(htmlElement);
+      // print(htmlElement);
       // Handle heading tags
       if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
         // Heading tag found, handle it differently
@@ -65,19 +65,53 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPage.add(htmlElement);
           currentPageHeight = lineBreak;
         }
+      } else if (htmlElement.contains('<img')) {
+        double imageWidth = 0;
+        double imageHeight = 0;
+        RegExp regExp =
+            RegExp(r'data-media-width="(\d+)" data-media-height="(\d+)"');
+        RegExpMatch? match = regExp.firstMatch(html);
+        if (match != null) {
+          imageWidth = double.parse(match.group(1)!);
+          imageHeight = double.parse(match.group(2)!);
+        }
+
+        // double imageHeight = getImageHeight(htmlElement, context) as double;
+        print("imageHeight $imageHeight");
+        print("imageWidth $imageWidth");
+        // print(imageHeight);
+        double lineBreak = ConfigMap().getParagraphLineSize() + 16;
+        // print("headingHeight: $headingHeight");
+
+        // Height= Width / Ratio
+        double heightRelativeToRatio =
+            (screenWidth + 16) / (imageWidth / imageHeight) + 16;
+        print("heightRelativeToRatio $heightRelativeToRatio");
+
+        if (currentPageHeight + lineBreak + heightRelativeToRatio <=
+            screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += lineBreak;
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = lineBreak;
+        }
       } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
         // Regular paragraph
         double paragraphHeight =
             calculateParagraphHeight(htmlElement, screenWidth);
 
         // print("paragraphHeight: $paragraphHeight");
+        double availableHeight = screenHeight - currentPageHeight;
 
         if (currentPageHeight + paragraphHeight <= screenHeight) {
           currentPage.add(htmlElement);
           currentPageHeight += paragraphHeight;
-        } else if (currentPageHeight >
-            ConfigMap().getParagraphLineSize() + 16) {
-          double availableHeight = screenHeight - currentPageHeight;
+        } else if (availableHeight > ConfigMap().getParagraphLineSize() + 16) {
+          // print(ConfigMap().getParagraphLineSize() + 16);
+          // double availableHeight = screenHeight - currentPageHeight;
           // print("availableHeight = screenHeight - currentPageHeight");
           // print("$availableHeight = $screenHeight - $currentPageHeight");
 
@@ -126,6 +160,26 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
           return SizedBox(
             width: MediaQuery.of(context).size.width,
             height: ConfigMap().getParagraphLineSize() + 16,
+          );
+        } else if (htmlElement.contains('<img')) {
+          String source = "";
+          double imageWidth = 0;
+          double imageHeight = 0;
+          RegExp regExp = RegExp(
+              r'<img src="([^"]+)" data-media-width="(\d+)" data-media-height="(\d+)"');
+
+          RegExpMatch? match = regExp.firstMatch(htmlElement);
+          if (match != null) {
+            source = match.group(1)!;
+            imageWidth = double.parse(match.group(2)!);
+            imageHeight = double.parse(match.group(3)!);
+          }
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AspectRatio(
+              aspectRatio: imageWidth / imageHeight,
+              child: Image.network(source),
+            ),
           );
         } else {
           // Regular paragraph
