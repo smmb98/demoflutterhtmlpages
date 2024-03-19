@@ -80,7 +80,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
         print("imageHeight $imageHeight");
         print("imageWidth $imageWidth");
         // print(imageHeight);
-        double lineBreak = ConfigMap().getParagraphLineSize() + 16;
+        // double lineBreak = ConfigMap().getParagraphLineSize() + 16;
         // print("headingHeight: $headingHeight");
 
         // Height= Width / Ratio
@@ -88,15 +88,14 @@ List<List<String>> parseHTML(String html, BuildContext context) {
             (screenWidth + 16) / (imageWidth / imageHeight) + 16;
         print("heightRelativeToRatio $heightRelativeToRatio");
 
-        if (currentPageHeight + lineBreak + heightRelativeToRatio <=
-            screenHeight) {
+        if (currentPageHeight + heightRelativeToRatio <= screenHeight) {
           currentPage.add(htmlElement);
-          currentPageHeight += lineBreak;
+          currentPageHeight += heightRelativeToRatio;
         } else {
           pages.add(List.from(currentPage));
           currentPage.clear();
           currentPage.add(htmlElement);
-          currentPageHeight = lineBreak;
+          currentPageHeight = heightRelativeToRatio;
         }
       } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
         // Regular paragraph
