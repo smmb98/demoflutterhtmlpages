@@ -6,6 +6,8 @@ import 'package:demohtmlpages/services/paragraph_parser.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:flutter/material.dart';
 
+import 'media_parser.dart';
+
 Map<String, double> getAvailableDeviceHeightAndWidth(BuildContext context) {
   double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
@@ -38,7 +40,6 @@ List<List<String>> parseHTML(String html, BuildContext context) {
 
   for (String htmlElement in htmlContent) {
     if (!RegExp(r'<(\w+)[^>]*>\s*</\1>').hasMatch(htmlElement)) {
-      // print(htmlElement);
       // Handle heading tags
       if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
         // Heading tag found, handle it differently
@@ -66,27 +67,19 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPageHeight = lineBreak;
         }
       } else if (htmlElement.contains('<img')) {
-        double imageWidth = 0;
-        double imageHeight = 0;
-        RegExp regExp =
-            RegExp(r'data-media-width="(\d+)" data-media-height="(\d+)"');
-        RegExpMatch? match = regExp.firstMatch(html);
-        if (match != null) {
-          imageWidth = double.parse(match.group(1)!);
-          imageHeight = double.parse(match.group(2)!);
+        double heightRelativeToRatio = calculateMediaHeight(html, screenWidth);
+
+        if (currentPageHeight + heightRelativeToRatio <= screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += heightRelativeToRatio;
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = heightRelativeToRatio;
         }
-
-        // double imageHeight = getImageHeight(htmlElement, context) as double;
-        print("imageHeight $imageHeight");
-        print("imageWidth $imageWidth");
-        // print(imageHeight);
-        // double lineBreak = ConfigMap().getParagraphLineSize() + 16;
-        // print("headingHeight: $headingHeight");
-
-        // Height= Width / Ratio
-        double heightRelativeToRatio =
-            (screenWidth + 16) / (imageWidth / imageHeight) + 16;
-        print("heightRelativeToRatio $heightRelativeToRatio");
+      } else if (htmlElement.contains('<video')) {
+        double heightRelativeToRatio = calculateMediaHeight(html, screenWidth);
 
         if (currentPageHeight + heightRelativeToRatio <= screenHeight) {
           currentPage.add(htmlElement);
@@ -178,6 +171,28 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
             child: AspectRatio(
               aspectRatio: imageWidth / imageHeight,
               child: Image.network(source),
+            ),
+          );
+        } else if (htmlElement.contains('<video')) {
+          String source = "";
+          double videoWidth = 0;
+          double videoHeight = 0;
+          RegExp regExp = RegExp(
+              r'<video src="([^"]+)" data-media-width="(\d+)" data-media-height="(\d+)"');
+
+          RegExpMatch? match = regExp.firstMatch(htmlElement);
+          if (match != null) {
+            source = match.group(1)!;
+            videoWidth = double.parse(match.group(2)!);
+            videoHeight = double.parse(match.group(3)!);
+          }
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AspectRatio(
+              aspectRatio: videoWidth / videoHeight,
+              child: Container(
+                color: Colors.green,
+              ),
             ),
           );
         } else {
