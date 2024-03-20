@@ -188,14 +188,20 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
             videoHeight = double.parse(match.group(3)!);
           }
           return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AspectRatio(
-              aspectRatio: videoWidth / videoHeight,
-              child:VideoPlayerWidget(
-            videoSource: source,
-          )
-            ),
-          );
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                // height: videoHeight - 100,
+                child: VideoPlayerWidget(
+                  videoSource: source,
+                ),
+              )
+              //   AspectRatio(
+              //     aspectRatio: videoWidth / videoHeight,
+              //     child:VideoPlayerWidget(
+              //   videoSource: source,
+              // )
+              //   ),
+              );
         } else {
           // Regular paragraph
           return buildParagraph(htmlElement);
