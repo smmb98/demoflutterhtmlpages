@@ -2,6 +2,7 @@
 import 'package:demohtmlpages/Config/config_map.dart';
 import 'package:demohtmlpages/services/heading_parser.dart';
 import 'package:demohtmlpages/services/paragraph_parser.dart';
+import 'package:demohtmlpages/services/video_player.dart';
 // ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 import 'package:flutter/material.dart';
@@ -190,9 +191,9 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
             padding: const EdgeInsets.all(8.0),
             child: AspectRatio(
               aspectRatio: videoWidth / videoHeight,
-              child: Container(
-                color: Colors.green,
-              ),
+              child:VideoPlayerWidget(
+            videoSource: source,
+          )
             ),
           );
         } else {
