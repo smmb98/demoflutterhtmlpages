@@ -9,22 +9,22 @@ import 'package:flutter/material.dart';
 
 import 'media_parser.dart';
 
-Map<String, double> getAvailableDeviceHeightAndWidth(BuildContext context) {
-  double screenHeight = MediaQuery.of(context).size.height;
-  double screenWidth = MediaQuery.of(context).size.width;
+Map<String, double> getAvailableDeviceHeightAndWidth(
+    BoxConstraints constraints) {
+  double screenHeight = constraints.maxHeight;
+  double screenWidth = constraints.maxWidth;
 
   print("screenHeight: $screenHeight");
   print("screenWidth: $screenWidth");
 
-  double appBarHeight = AppBar().preferredSize.height;
+  // double availableHeight = screenHeight * 0.9;
+  double availableHeight = screenHeight * 1;
 
-  double availableHeight = screenHeight - appBarHeight;
-  availableHeight = availableHeight - (availableHeight * 0.15);
   print("availableHeight: $availableHeight");
   return {'screenHeight': availableHeight, 'screenWidth': screenWidth};
 }
 
-List<List<String>> parseHTML(String html, BuildContext context) {
+List<List<String>> parseHTML(String html, BoxConstraints constraints) {
   final document = htmlParser.parse(html);
   List<String> htmlContent = document.body!.children
       .map((element) => element.outerHtml)
@@ -35,7 +35,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   List<String> currentPage = [];
 
   var {'screenHeight': screenHeight, 'screenWidth': screenWidth} =
-      getAvailableDeviceHeightAndWidth(context);
+      getAvailableDeviceHeightAndWidth(constraints);
 
   double currentPageHeight = 0;
 
@@ -130,7 +130,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPageHeight = paragraphHeight;
         }
       }
-      // print("Page: ${pages.length}");
+      // print("Page: ${pages.length + 1}");
       // print("currentPageHeight: $currentPageHeight");
       // print("\n");
     }
@@ -143,7 +143,7 @@ List<List<String>> parseHTML(String html, BuildContext context) {
   return pages;
 }
 
-Widget buildPage(List<String> htmlElements, BuildContext context) {
+Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
   return SingleChildScrollView(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +153,7 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
           return buildHeading(htmlElement);
         } else if (htmlElement.contains('<br>')) {
           return SizedBox(
-            width: MediaQuery.of(context).size.width,
+            width: constraints.maxWidth,
             height: ConfigMap().getParagraphLineSize() + 16,
           );
         } else if (htmlElement.contains('<img')) {
@@ -172,7 +172,9 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: AspectRatio(
-              aspectRatio: imageWidth / imageHeight,
+              aspectRatio:
+
+                  imageWidth / imageHeight,
               child: Image.network(source),
             ),
           );

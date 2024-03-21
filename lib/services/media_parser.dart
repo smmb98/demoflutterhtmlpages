@@ -14,7 +14,10 @@ double calculateMediaHeight(String htmlElement, double screenWidth) {
   // print("mediaHeight $mediaHeight");
   // Calculate the height relative to the aspect ratio
   // Height= Width / Ratio
-  double heightRelativeToRatio = screenWidth / (mediaWidth / mediaHeight);
+  double aspectRatio =
+      // (mediaWidth / mediaHeight) < 0.62 ? 0.5625 : mediaWidth / mediaHeight;
+      mediaWidth / mediaHeight;
+  double heightRelativeToRatio = ((screenWidth - 16) / aspectRatio) + 16;
   // print("heightRelativeToRatio $heightRelativeToRatio");
 
   return heightRelativeToRatio;
