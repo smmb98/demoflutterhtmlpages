@@ -68,7 +68,8 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPageHeight = lineBreak;
         }
       } else if (htmlElement.contains('<img')) {
-        double heightRelativeToRatio = calculateMediaHeight(html, screenWidth);
+        double heightRelativeToRatio =
+            calculateMediaHeight(htmlElement, screenWidth);
 
         if (currentPageHeight + heightRelativeToRatio <= screenHeight) {
           currentPage.add(htmlElement);
@@ -80,7 +81,8 @@ List<List<String>> parseHTML(String html, BuildContext context) {
           currentPageHeight = heightRelativeToRatio;
         }
       } else if (htmlElement.contains('<video')) {
-        double heightRelativeToRatio = calculateMediaHeight(html, screenWidth);
+        double heightRelativeToRatio =
+            calculateMediaHeight(htmlElement, screenWidth);
 
         if (currentPageHeight + heightRelativeToRatio <= screenHeight) {
           currentPage.add(htmlElement);
@@ -188,20 +190,20 @@ Widget buildPage(List<String> htmlElements, BuildContext context) {
             videoHeight = double.parse(match.group(3)!);
           }
           return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                // height: videoHeight - 100,
-                child: VideoPlayerWidget(
-                  videoSource: source,
-                ),
-              )
-              //   AspectRatio(
-              //     aspectRatio: videoWidth / videoHeight,
-              //     child:VideoPlayerWidget(
-              //   videoSource: source,
-              // )
-              //   ),
-              );
+            padding: const EdgeInsets.all(8.0),
+            child:
+                // SizedBox(
+                //   // height: videoHeight - 100,
+                //   child: VideoPlayerWidget(
+                //     videoSource: source,
+                //   ),
+                // )
+                AspectRatio(
+                    aspectRatio: videoWidth / videoHeight,
+                    child: VideoPlayerWidget(
+                      videoSource: source,
+                    )),
+          );
         } else {
           // Regular paragraph
           return buildParagraph(htmlElement);
