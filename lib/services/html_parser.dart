@@ -172,9 +172,7 @@ Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: AspectRatio(
-              aspectRatio:
-
-                  imageWidth / imageHeight,
+              aspectRatio: imageWidth / imageHeight,
               child: Image.network(source),
             ),
           );
@@ -182,8 +180,9 @@ Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
           String source = "";
           double videoWidth = 0;
           double videoHeight = 0;
+
           RegExp regExp = RegExp(
-              r'<video src="([^"]+)" data-media-width="(\d+)" data-media-height="(\d+)"');
+              r'<video src="([^"]+)" controls="" data-media-width="(\d+)" data-media-height="(\d+)".*?>');
 
           RegExpMatch? match = regExp.firstMatch(htmlElement);
           if (match != null) {
@@ -193,18 +192,11 @@ Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
           }
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child:
-                // SizedBox(
-                //   // height: videoHeight - 100,
-                //   child: VideoPlayerWidget(
-                //     videoSource: source,
-                //   ),
-                // )
-                AspectRatio(
-                    aspectRatio: videoWidth / videoHeight,
-                    child: VideoPlayerWidget(
-                      videoSource: source,
-                    )),
+            child: AspectRatio(
+                aspectRatio: videoWidth / videoHeight,
+                child: VideoPlayerWidget(
+                  videoSource: source,
+                )),
           );
         } else {
           // Regular paragraph

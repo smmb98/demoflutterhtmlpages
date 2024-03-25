@@ -91,14 +91,7 @@ class MyHomePageState extends State<MyHomePage> {
       ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          List<List<String>> pages =
-              parseHTML(htmlData.replaceAllMapped(
-      RegExp(r'<video\b[^>]*>'),
-      (match) {
-        var videoTag = match.group(0)!;
-        return videoTag.replaceAll('controls', '');
-      },
-    ), constraints);
+          List<List<String>> pages = parseHTML(htmlData, constraints);
 
           return PageView.builder(
             key: _pageViewKey, // Assign the global key
@@ -112,5 +105,4 @@ class MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
 }
