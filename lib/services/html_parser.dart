@@ -42,20 +42,7 @@ List<List<String>> parseHTML(String html, BoxConstraints constraints) {
   for (String htmlElement in htmlContent) {
     if (!RegExp(r'<(\w+)[^>]*>\s*</\1>').hasMatch(htmlElement)) {
       // Handle heading tags
-      if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
-        // Heading tag found, handle it differently
-        double headingHeight = calculateHeadingHeight(htmlElement, screenWidth);
-        // print("headingHeight: $headingHeight");
-        if (currentPageHeight + headingHeight <= screenHeight) {
-          currentPage.add(htmlElement);
-          currentPageHeight += headingHeight;
-        } else {
-          pages.add(List.from(currentPage));
-          currentPage.clear();
-          currentPage.add(htmlElement);
-          currentPageHeight = headingHeight;
-        }
-      } else if (htmlElement.contains('<br>')) {
+      if (htmlElement.contains('<br>')) {
         double lineBreak = ConfigMap().getParagraphLineSize() + 16;
         // print("headingHeight: $headingHeight");
         if (currentPageHeight + lineBreak <= screenHeight) {
@@ -92,6 +79,19 @@ List<List<String>> parseHTML(String html, BoxConstraints constraints) {
           currentPage.clear();
           currentPage.add(htmlElement);
           currentPageHeight = heightRelativeToRatio;
+        }
+      } else if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
+        // Heading tag found, handle it differently
+        double headingHeight = calculateHeadingHeight(htmlElement, screenWidth);
+        // print("headingHeight: $headingHeight");
+        if (currentPageHeight + headingHeight <= screenHeight) {
+          currentPage.add(htmlElement);
+          currentPageHeight += headingHeight;
+        } else {
+          pages.add(List.from(currentPage));
+          currentPage.clear();
+          currentPage.add(htmlElement);
+          currentPageHeight = headingHeight;
         }
       } else if (htmlElement.contains(RegExp(r'<p[^>]*>'))) {
         // Regular paragraph
