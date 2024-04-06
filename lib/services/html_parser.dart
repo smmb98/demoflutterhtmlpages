@@ -148,10 +148,7 @@ Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: htmlElements.map((htmlElement) {
-        if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
-          // Heading tag found, handle it differently
-          return buildHeading(htmlElement);
-        } else if (htmlElement.contains('<br>')) {
+        if (htmlElement.contains('<br>')) {
           return SizedBox(
             width: constraints.maxWidth,
             height: ConfigMap().getParagraphLineSize() + 16,
@@ -198,6 +195,10 @@ Widget buildPage(List<String> htmlElements, BoxConstraints constraints) {
                   videoSource: source,
                 )),
           );
+        }
+        if (htmlElement.contains(RegExp(r'<h[1-6][^>]*>'))) {
+          // Heading tag found, handle it differently
+          return buildHeading(htmlElement);
         } else {
           // Regular paragraph
           return buildParagraph(htmlElement);
