@@ -122,8 +122,15 @@ Map<String, String> conversionToHTML(String paragraph, String splittedText) {
 
   int indexOfFirstParagraphLastWord = -1;
   for (int i = 0; i < countOfFirstParagraphLastWord; i++) {
+    // Escape any special characters in the search word
+    String escapedWord = RegExp.escape(firstParagraphlastWord);
+
+    // Use word boundary anchors to match the word as a whole word
+    RegExp wordPattern = RegExp("\\b$escapedWord\\b");
+
     indexOfFirstParagraphLastWord = cleanedParagraph.indexOf(
-        firstParagraphlastWord, indexOfFirstParagraphLastWord + 1);
+        wordPattern, indexOfFirstParagraphLastWord + 1);
+
     if (indexOfFirstParagraphLastWord == -1) {
       break; // Return -1 if the word is not found before reaching the n-th occurrence
     }
