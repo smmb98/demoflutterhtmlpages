@@ -1,16 +1,38 @@
 # demohtmlpages
+# HTML to Native Flutter Widgets Converter  
 
-A new Flutter project.
+A Flutter application that converts **HTML strings** into **native Flutter widgets**, enabling customizable, responsive, and paginated content. This app is designed to support basic HTML font tags and multimedia elements, making it perfect for building feature-rich content display applications.  
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features  
+- Converts supported HTML tags into native Flutter widgets.  
+- Provides **resizable fonts** for better readability.  
+- Automatically splits content into **pages** and tracks **page numbers**.  
+- Supports the following HTML tags:  
+  - Font Styling: `<b>`, `<i>`, `<u>`  
+  - Structural: `<p>`, `<h>` (e.g., `<h1>` to `<h6>`), `<br>`  
+  - Media: `<img>`, `<video>`  
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Supported Tags  
+| Tag         | Functionality                          |  
+|-------------|---------------------------------------|  
+| `<b>`       | Bold text styling                     |  
+| `<i>`       | Italic text styling                   |  
+| `<u>`       | Underlined text styling               |  
+| `<p>`       | Paragraph block                       |  
+| `<h>`       | Header tags (`<h1>` to `<h6>`)        |  
+| `<br>`      | Line break                            |  
+| `<img>`     | Embeds images into the content        |  
+| `<video>`   | Embeds videos into the content        |  
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🛠️ Installation  
+
+1. **Clone the repository**:  
+   ```bash  
+   git clone https://github.com/yourusername/flutter-html-to-widgets  
+   cd flutter-html-to-widgets  
